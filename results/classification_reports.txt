@@ -1,0 +1,48 @@
+===== Logistic Regression =====
+                precision    recall  f1-score   support
+
+  high quality       0.55      0.33      0.41       256
+   low quality       0.67      0.63      0.65       477
+medium quality       0.53      0.65      0.58       567
+
+      accuracy                           0.58      1300
+     macro avg       0.58      0.54      0.55      1300
+  weighted avg       0.59      0.58      0.58      1300
+
+Confusion matrix (labels: low quality, medium quality, high quality)
+[[301 170   6]
+ [134 370  63]
+ [ 13 158  85]]
+
+===== Random Forest =====
+                precision    recall  f1-score   support
+
+  high quality       0.77      0.62      0.69       256
+   low quality       0.80      0.75      0.77       477
+medium quality       0.67      0.77      0.72       567
+
+      accuracy                           0.73      1300
+     macro avg       0.75      0.71      0.73      1300
+  weighted avg       0.74      0.73      0.73      1300
+
+Confusion matrix (labels: low quality, medium quality, high quality)
+[[358 117   2]
+ [ 87 436  44]
+ [  5  93 158]]
+
+===== SVM =====
+                precision    recall  f1-score   support
+
+  high quality       0.62      0.33      0.43       256
+   low quality       0.73      0.69      0.71       477
+medium quality       0.56      0.71      0.63       567
+
+      accuracy                           0.63      1300
+     macro avg       0.64      0.58      0.59      1300
+  weighted avg       0.63      0.63      0.62      1300
+
+Confusion matrix (labels: low quality, medium quality, high quality)
+[[331 143   3]
+ [119 400  48]
+ [  6 166  84]]
+

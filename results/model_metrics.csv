@@ -1,0 +1,4 @@
+model_key,model_name,model_path,accuracy,precision_macro,recall_macro,f1_macro
+logistic_regression,Logistic Regression,models/logistic_regression_model.joblib,0.5815384615384616,0.584636337277813,0.5385386076309163,0.5501417314354747
+random_forest,Random Forest,models/random_forest_model.joblib,0.7323076923076923,0.7483293200321063,0.7122236815469257,0.7260731230399212
+svm,SVM,models/svm_model.joblib,0.6269230769230769,0.6374247698072952,0.575837569187936,0.5887219626483908

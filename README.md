@@ -1,3 +1,25 @@
+# Wine Quality Prediction
+
+This fork adapts the professor's ML project template for a DAT0424 student proof of concept.
+
+The objective is to predict `quality_group` from physicochemical wine variables and `wine_type`
+using the Wine Quality Dataset. The three registered models are Logistic Regression,
+Random Forest, and SVM. The main comparison metric is macro F1-score.
+
+Useful commands:
+
+```bash
+pip install -r requirements.txt
+python scripts/main.py
+python scripts/train_full_pipeline.py
+streamlit run src/app.py
+```
+
+Note: `python scripts/main.py` follows the professor template workflow. It evaluates the saved
+models, writes `results/model_metrics.csv`, and then launches Streamlit locally.
+
+---
+
 # ML Project Template
 
 This repository is the base template that each student will fork and adapt for the final machine learning proof-of-concept project.

@@ -7,7 +7,11 @@ import sys
 from pathlib import Path
 from typing import Any
 
-from dotenv import load_dotenv
+try:
+    from dotenv import load_dotenv
+except ImportError:
+    def load_dotenv(*args: object, **kwargs: object) -> bool:
+        return False
 
 
 def _load_module(module_name: str, module_path: Path) -> Any:
@@ -86,7 +90,8 @@ def _evaluate_models(X_test: Any, y_test: Any) -> list[dict[str, object]]:
     rows: list[dict[str, object]] = []
 
     for model_key, model_config in MODELS.items():
-        model = load_model(Path(model_config["path"]))
+        model_path = Path(model_config["path"])
+        model = load_model(model_path)
 
         if not hasattr(model, "predict"):
             raise TypeError(
@@ -104,7 +109,7 @@ def _evaluate_models(X_test: Any, y_test: Any) -> list[dict[str, object]]:
         row: dict[str, object] = {
             "model_key": model_key,
             "model_name": model_config.get("name", model_key),
-            "model_path": str(model_config["path"]),
+            "model_path": str(model_path.relative_to(PROJECT_ROOT)),
         }
 
         for metric_name, metric_value in metrics.items():
