@@ -1,38 +1,34 @@
-"""Helpers for loading serialized models."""
-
-from __future__ import annotations
-
 import pickle
 from pathlib import Path
-from typing import Any
+
+import joblib
 
 
-def load_model(model_path: Path) -> Any:
-    """Load a serialized model from disk.
-
-    Supported formats are `.joblib`, `.pkl`, and `.pickle`.
+def load_model(model_path: Path):
     """
-
-    if not model_path.exists():
-        raise FileNotFoundError(f"Model file does not exist: {model_path}")
-
-    suffix = model_path.suffix.lower()
-
-    if suffix == ".joblib":
-        try:
-            import joblib
-        except ImportError as exc:
-            raise ImportError(
-                "Loading `.joblib` files requires the `joblib` package. "
-                "Add it to requirements.txt if needed."
-            ) from exc
-
+    Load a saved model from .joblib, .pkl, or .pickle.
+    """
+    model_path = Path(model_path)
+    if model_path.suffix == ".joblib":
         return joblib.load(model_path)
+    if model_path.suffix in {".pkl", ".pickle"}:
+        with model_path.open("rb") as file:
+            return pickle.load(file)
+    raise ValueError(f"Unsupported model file extension: {model_path.suffix}")
 
-    if suffix in {".pkl", ".pickle"}:
-        with model_path.open("rb") as file_handle:
-            return pickle.load(file_handle)
 
-    raise ValueError(
-        f"Unsupported model format for {model_path}. Use .joblib, .pkl, or .pickle."
-    )
+def save_model(model, model_path: Path) -> None:
+    """
+    Save a model to .joblib, .pkl, or .pickle.
+    """
+    model_path = Path(model_path)
+    model_path.parent.mkdir(parents=True, exist_ok=True)
+    if model_path.suffix == ".joblib":
+        joblib.dump(model, model_path)
+        return
+    if model_path.suffix in {".pkl", ".pickle"}:
+        with model_path.open("wb") as file:
+            pickle.dump(model, file)
+        return
+    raise ValueError(f"Unsupported model file extension: {model_path.suffix}")
+

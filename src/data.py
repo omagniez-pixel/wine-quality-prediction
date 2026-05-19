@@ -1,30 +1,65 @@
-"""Student-owned dataset loading contract.
+import pandas as pd
 
-Students must implement ``load_dataset_split`` so that ``scripts/main.py`` can
-evaluate every configured model on the same test split.
-"""
+from src.config import (
+    COMBINED_WITH_TARGET_FILE,
+    RED_WINE_FILE,
+    TARGET_COLUMN,
+    WHITE_WINE_FILE,
+    X_TEST_ENGINEERED_FILE,
+    X_TRAIN_ENGINEERED_FILE,
+    Y_TEST_FILE,
+    Y_TRAIN_FILE,
+)
 
-from __future__ import annotations
 
-from typing import Any
-
-
-def load_dataset_split() -> tuple[Any, Any, Any, Any]:
-    """Return the dataset split used for model evaluation.
-
-    Expected return value:
-        A tuple ``(X_train, X_test, y_train, y_test)``.
-
-    Constraints:
-    - ``X_train`` and ``X_test`` must contain feature data in a format accepted
-      by the trained models stored in ``config.MODELS``.
-    - ``y_train`` and ``y_test`` must contain the corresponding targets.
-    - ``y_test`` must align with the predictions produced by each loaded model.
-
-    Typical choices for the return types are ``pandas.DataFrame`` /
-    ``pandas.Series`` or ``numpy.ndarray``.
+def create_quality_group(df: pd.DataFrame) -> pd.DataFrame:
     """
+    Add the quality_group target column from the original quality score.
+    """
+    data = df.copy()
 
-    raise NotImplementedError(
-        "Implement data.load_dataset_split() before running scripts/main.py."
-    )
+    def map_quality(value: int) -> str:
+        if value <= 5:
+            return "low quality"
+        if value == 6:
+            return "medium quality"
+        return "high quality"
+
+    data[TARGET_COLUMN] = data["quality"].apply(map_quality)
+    return data
+
+
+def load_raw_wine_data() -> tuple[pd.DataFrame, pd.DataFrame]:
+    """
+    Load raw red and white wine datasets with the correct separator.
+    The original CSV files are only read, never modified.
+    """
+    red_wine = pd.read_csv(RED_WINE_FILE, sep=";")
+    white_wine = pd.read_csv(WHITE_WINE_FILE, sep=";")
+    red_wine["wine_type"] = "red"
+    white_wine["wine_type"] = "white"
+    return red_wine, white_wine
+
+
+def build_combined_dataset(save: bool = False) -> pd.DataFrame:
+    """
+    Merge red and white wine data and add the quality_group target.
+    """
+    red_wine, white_wine = load_raw_wine_data()
+    combined = pd.concat([red_wine, white_wine], ignore_index=True)
+    combined = create_quality_group(combined)
+    if save:
+        combined.to_csv(COMBINED_WITH_TARGET_FILE, index=False)
+    return combined
+
+
+def load_dataset_split() -> tuple:
+    """
+    Load processed train/test split for the Wine Quality project.
+    Returns X_train, X_test, y_train, y_test.
+    """
+    X_train = pd.read_csv(X_TRAIN_ENGINEERED_FILE)
+    X_test = pd.read_csv(X_TEST_ENGINEERED_FILE)
+    y_train = pd.read_csv(Y_TRAIN_FILE).squeeze("columns")
+    y_test = pd.read_csv(Y_TEST_FILE).squeeze("columns")
+    return X_train, X_test, y_train, y_test
